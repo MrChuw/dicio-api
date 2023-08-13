@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"  # Substitua pelo comando correto, se necessário
-  functions = "api/index.js"     # Substitua pelo diretório de saída das funções
+  functions = "api/dist"     # Substitua pelo diretório de saída das funções
 
 [[redirects]]
   from = "/api/*"
@@ -9,7 +9,7 @@
 
 [[redirects]]
   from = "/*"
-  to = "/index.js"
+  to = "/index.html"
   status = 200
 
 [[headers]]
