@@ -1,18 +1,13 @@
+# This file defines the build and deploy settings for your Netlify site.
+
 [build]
-  command = "npm run build"  # Substitua pelo comando correto, se necessário
-  functions = "api/dist"     # Substitua pelo diretório de saída das funções
+  # The build command is the command that will be run to build your site.
+  command = "npm run build"
 
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+  # The build directory is the directory that will be built and deployed.
+  publish = "dist"
 
-[[redirects]]
+[redirects]
+  # This redirect will map all requests to `/` to `api/index.js`.
   from = "/*"
-  to = "/index.html"
-  status = 200
-
-[[headers]]
-  for = "/*"
-    [headers.values]
-      Access-Control-Allow-Origin = "*"
+  to = "/api/index.js"
