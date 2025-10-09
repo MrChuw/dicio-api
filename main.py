@@ -1,21 +1,18 @@
+import asyncio
 import json
 import logging
 import random
 import subprocess
 import time
-from contextlib import asynccontextmanager
-from datetime import timedelta
 from itertools import chain
 from pathlib import Path
 
 import hunspell
 import uvicorn
-from aiohttp_client_cache import CachedSession, SQLiteBackend
 from fastapi import FastAPI, Request
 from fastapi.responses import (
     HTMLResponse,
     JSONResponse,
-    RedirectResponse,
     StreamingResponse,
 )
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -27,29 +24,7 @@ CACHE_DIR = Path(".cache/dictionaries")
 logger = logging.getLogger(__name__)
 config_path = Path(__file__).with_name("logging_config.json")
 
-
-@asynccontextmanager
-async def lifespan(_app: FastAPI):
-    app.client_cache = SQLiteBackend(
-        cache_name=f".cache/aiohttp-dicio.db",
-        urls_expire_after={
-            "https://raw.githubusercontent.com/*": timedelta(days=10),
-        },
-        allowed_methods=("GET",),
-        include_headers=True,
-        allowed_codes=(200,),
-    )
-    _app.client_session = CachedSession(cache=app.client_cache)
-    yield
-    await _app.client_session.close()
-
-
-class Annoyed(FastAPI):
-    client_session: CachedSession
-    client_cache: SQLiteBackend
-
-
-app = Annoyed(lifespan=lifespan, debug=False)
+app = FastAPI(debug=False)
 app.logger = CustomizeLogger.make_logger(config_path)
 
 
@@ -105,10 +80,8 @@ async def get_languages():
     languages_json.touch()
     images_txt.touch()
 
-    if updated:
+    if not updated:
         return json.load(open(languages_json, "r+", encoding="utf-8"))
-
-    await app.client_cache.clear()
 
     result = {}
     image_paths: list[str] = []
@@ -139,7 +112,7 @@ async def get_languages():
 
     with open(images_txt, "w", encoding="utf-8") as f:
         f.write("\n".join(image_paths))
-
+    await asyncio.sleep(0.2)
     return result
 
 
@@ -154,7 +127,31 @@ async def root(request: Request):
     return HTMLResponse(
         """
     <html>
-        <body style="font-family: sans-serif; padding: 2em;">
+        <head>
+            <title>Hunspell Dictionary API</title>
+            <style>
+                body {
+                    background-color: #000;
+                    color: #fff;
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    text-align: center;
+                }
+                a {
+                    color: #4da6ff;
+                    text-decoration: none;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+        <body>
             <h2>Hunspell Dictionary API</h2>
             <p>
                 This is a simple API that uses

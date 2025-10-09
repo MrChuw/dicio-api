@@ -6,7 +6,7 @@ services:
     ports:
       - "12834:12834"
     command: >
-      /bin/bash -c "pip install -q -r requirements.txt && python main.py"
+      /bin/bash -c "apt-get update && apt-get -y install libhunspell-dev git && pip install -q -r requirements.txt && python main.py"
     volumes:
       - .:/app
     restart: unless-stopped
