@@ -1,0 +1,19 @@
+[project]
+name = "dicio-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiofiles>=24.1.0",
+    "aiohttp-client-cache[sqlite]>=0.14.1",
+    "fastapi>=0.118.2",
+    "hunspell>=0.5.5",
+    "loguru>=0.7.3",
+    "uvicorn>=0.37.0",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+]

@@ -1,0 +1,12 @@
+
+services:
+  Dicio-api:
+    image: python:3.13.1
+    working_dir: /app
+    ports:
+      - "12834:12834"
+    command: >
+      /bin/bash -c "pip install -q -r requirements.txt && python main.py"
+    volumes:
+      - .:/app
+    restart: unless-stopped

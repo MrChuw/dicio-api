@@ -1,0 +1,10 @@
+{
+  "logger": {
+    "path": "./logs/logs",
+    "filename": "access.log",
+    "level": "info",
+    "rotation": "10 days",
+    "retention": "6 months",
+    "format": "<level>{level: <8}</level> <green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> request id: {extra[request_id]} - <level>{message}</level>"
+  }
+}
