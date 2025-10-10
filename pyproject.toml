@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiofiles>=24.1.0",
+    "cachetools>=6.2.0",
     "fastapi>=0.118.2",
     "hunspell>=0.5.5",
     "loguru>=0.7.3",

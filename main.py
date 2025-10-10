@@ -3,12 +3,14 @@ import json
 import logging
 import random
 import subprocess
+import threading
 import time
 from itertools import chain
 from pathlib import Path
 
 import hunspell
 import uvicorn
+from cachetools import TTLCache, cached
 from fastapi import FastAPI, Request
 from fastapi.responses import (
     HTMLResponse,
@@ -24,7 +26,11 @@ CACHE_DIR = Path(".cache/dictionaries")
 logger = logging.getLogger(__name__)
 config_path = Path(__file__).with_name("logging_config.json")
 
-app = FastAPI(debug=False)
+CACHE_LOCK = threading.Lock()
+
+
+# app = FastAPI(debug=False)
+app = FastAPI()
 app.logger = CustomizeLogger.make_logger(config_path)
 
 
@@ -180,20 +186,36 @@ async def custom_404_handler(request: Request, exc: StarletteHTTPException):
     return await request.app.default_exception_handler(request, exc)
 
 
+@cached(TTLCache(maxsize=64, ttl=30 * 60), lock=CACHE_LOCK)  # 30 minutes TTL
+def load_hunspell(dic_path: Path, aff_path: Path) -> hunspell.HunSpell:
+    try:
+        return hunspell.HunSpell(str(dic_path), str(aff_path))
+    except Exception as e:
+        logger.error(f"Failed to load Hunspell: {e}")
+        raise
+
+
 @app.get("/{lang}/{file}/{word}", response_class=JSONResponse)
 async def get_word(request: Request, lang: str, file: str, word: str):
+    start_time = time.perf_counter()  # início da medição
+
     dic_path = Path(CACHE_DIR / f"{lang}/{file}.dic")
     aff_path = Path(CACHE_DIR / f"{lang}/{file}.aff")
+
     try:
-        hob_dict = hunspell.HunSpell(str(dic_path), str(aff_path))
+        hob_dict = load_hunspell(dic_path, aff_path)
     except Exception as e:
         logger.error(e)
         return await custom_404_handler(request, StarletteHTTPException(404))
+
     response = {
         "exist": hob_dict.spell(word),
         "suggestions": hob_dict.suggest(word),
         "stem": [_word.decode("utf-8") for _word in hob_dict.stem(word)],
         "analyze": [_word.decode("utf-8") for _word in hob_dict.analyze(word)],
+        "elapsed_time": round(
+            time.perf_counter() - start_time, 10
+        ),  # tempo em segundos
     }
 
     return JSONResponse(response, status_code=200)

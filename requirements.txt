@@ -2,53 +2,24 @@
 #    uv pip compile pyproject.toml -o requirements.txt
 aiofiles==24.1.0
     # via dicio-api (pyproject.toml)
-aiohappyeyeballs==2.6.1
-    # via aiohttp
-aiohttp==3.13.0
-    # via aiohttp-client-cache
-aiohttp-client-cache==0.14.1
-    # via dicio-api (pyproject.toml)
-aiosignal==1.4.0
-    # via aiohttp
-aiosqlite==0.21.0
-    # via aiohttp-client-cache
 annotated-types==0.7.0
     # via pydantic
 anyio==4.11.0
     # via starlette
-attrs==25.4.0
-    # via
-    #   aiohttp
-    #   aiohttp-client-cache
+cachetools==6.2.0
+    # via dicio-api (pyproject.toml)
 click==8.3.0
     # via uvicorn
 fastapi==0.118.2
     # via dicio-api (pyproject.toml)
-frozenlist==1.8.0
-    # via
-    #   aiohttp
-    #   aiosignal
 h11==0.16.0
     # via uvicorn
 hunspell==0.5.5
     # via dicio-api (pyproject.toml)
 idna==3.10
-    # via
-    #   anyio
-    #   url-normalize
-    #   yarl
-itsdangerous==2.2.0
-    # via aiohttp-client-cache
+    # via anyio
 loguru==0.7.3
     # via dicio-api (pyproject.toml)
-multidict==6.7.0
-    # via
-    #   aiohttp
-    #   yarl
-propcache==0.4.1
-    # via
-    #   aiohttp
-    #   yarl
 pydantic==2.12.0
     # via fastapi
 pydantic-core==2.41.1
@@ -59,16 +30,11 @@ starlette==0.48.0
     # via fastapi
 typing-extensions==4.15.0
     # via
-    #   aiosqlite
     #   fastapi
     #   pydantic
     #   pydantic-core
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
-url-normalize==2.2.1
-    # via aiohttp-client-cache
 uvicorn==0.37.0
     # via dicio-api (pyproject.toml)
-yarl==1.22.0
-    # via aiohttp

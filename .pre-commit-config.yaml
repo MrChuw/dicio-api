@@ -22,8 +22,12 @@ repos:
       - id: pip-compile
         name: pip-compile requirements.txt
         args: [pyproject.toml, -o, requirements.txt]
+        always_run: true
+
       - id: pip-compile
         name: pip-compile requirements-dev.txt
         args: [--group, dev, -o, requirements-dev.txt]
         files: ^requirements-dev\.(in|txt)$
+        always_run: true
+
       - id: uv-lock
