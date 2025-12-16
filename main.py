@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 import random
 import subprocess
 import threading
@@ -11,6 +12,7 @@ from pathlib import Path
 import hunspell
 import uvicorn
 from cachetools import TTLCache, cached
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import (
     HTMLResponse,
@@ -20,6 +22,8 @@ from fastapi.responses import (
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from custom_logging import CustomizeLogger
+
+load_dotenv()
 
 CACHE_DIR = Path(".cache/dictionaries")
 
@@ -32,6 +36,38 @@ CACHE_LOCK = threading.Lock()
 # app = FastAPI(debug=False)
 app = FastAPI()
 app.logger = CustomizeLogger.make_logger(config_path)
+
+script = ""
+if (ANALYTICS_URL := os.getenv("ANALYTICS_URL")) and (
+    ANALYTICS_UUID := os.getenv("ANALYTICS_UUID")
+):
+    script = f"""
+    <script defer src="{ANALYTICS_URL}" data-website-id="{ANALYTICS_UUID}"></script>
+    """
+
+style = """
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        text-align: center;
+    }
+    a {
+        color: #4da6ff;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+"""
 
 
 @app.get("/favicon.ico", response_class=StreamingResponse)
@@ -131,44 +167,25 @@ async def languages():
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     return HTMLResponse(
-        """
+        f"""
     <html>
         <head>
             <title>Hunspell Dictionary API</title>
-            <style>
-                body {
-                    background-color: #000;
-                    color: #fff;
-                    font-family: Arial, sans-serif;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    margin: 0;
-                    text-align: center;
-                }
-                a {
-                    color: #4da6ff;
-                    text-decoration: none;
-                }
-                a:hover {
-                    text-decoration: underline;
-                }
-            </style>
+            {style}
+            {script}
         </head>
         <body>
             <h2>Hunspell Dictionary API</h2>
             <p>
                 This is a simple API that uses
-                <a href="https://github.com/LibreOffice/dictionaries" target="_blank">
+                <a href="https://github.com/LibreOffice/dictionaries" data-umami-event="look-at-repo" data-umami-event-url="https://github.com/LibreOffice/dictionaries" target="_blank">
                     LibreOffice dictionaries
                 </a>
                 to verify if a given word exists in a specific language and variation.
             </p>
             <p>
                 To check supported languages, go to
-                <a href="/languages">/languages</a>.
+                <a href="/languages" data-umami-event="look-at-languages" data-umami-event-url="/languages">/languages</a>.
             </p>
         </body>
     </html>

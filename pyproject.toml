@@ -10,6 +10,7 @@ dependencies = [
     "fastapi>=0.118.2",
     "hunspell>=0.5.5",
     "loguru>=0.7.3",
+    "python-dotenv>=1.2.1",
     "uvicorn>=0.37.0",
 ]
 
