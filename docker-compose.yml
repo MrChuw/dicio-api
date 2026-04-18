@@ -3,8 +3,11 @@ services:
   Dicio-api:
     image: python:3.13.1
     working_dir: /app
-    ports:
-      - "12834:12834"
+    # ports:
+    #   - "${PORT:-12834}:12834"
+    environment:
+      - ANALYTICS_URL=${ANALYTICS_URL:-}
+      - ANALYTICS_UUID=${ANALYTICS_UUID:-}
     command: >
       /bin/bash -c "apt-get update && apt-get -y install libhunspell-dev git && pip install -q -r requirements.txt && python main.py"
     volumes:
