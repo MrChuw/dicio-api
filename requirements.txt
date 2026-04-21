@@ -84,7 +84,7 @@ pydantic-settings==2.13.1
     # via fastapi
 pygments==2.20.0
     # via rich
-python-dotenv==1.2.1
+python-dotenv==1.2.2
     # via
     #   dicio-api (pyproject.toml)
     #   pydantic-settings
